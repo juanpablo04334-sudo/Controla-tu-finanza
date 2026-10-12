@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Aplicación visual para registrar gastos, ganancias y organizar tus finanzas personales." />
+  <title>Mi Control de Finanzas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div class="brand-text">
+          <strong>Mi Control</strong>
+          <span>Gastos, ganancias y organización</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="#resumen">Resumen</a>
+        <a href="#movimientos">Movimientos</a>
+        <a href="#organizacion">Organización</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow">Finanzas personales</span>
+        <h1>Controla tu dinero de forma simple y visual</h1>
+        <p>
+          Registra tus ingresos y gastos, revisa tu balance en tiempo real y organiza tus tareas financieras
+          desde un solo lugar.
+        </p>
+      </div>
+
+      <aside class="hero-side reveal delay-1">
+        <div class="mini-kpis">
+          <div class="kpi">
+            <div class="kpi-label">Balance actual</div>
+            <div class="kpi-value balance" id="balance">0</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Ingresos</div>
+            <div class="kpi-value income" id="total-income">0</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Gastos</div>
+            <div class="kpi-value expense" id="total-expense">0</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Ahorro</div>
+            <div class="kpi-value savings" id="savings">0%</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main class="app">
+    <div class="wrap">
+      <section id="resumen" class="panel chart-panel reveal delay-2">
+        <div class="panel-head">
+          <div>
+            <h2>Resumen general</h2>
+            <p>Visualiza tus finanzas de forma rápida y clara.</p>
+          </div>
+        </div>
+
+        <div class="summary-strip">
+          <div class="summary-box">
+            <span>Balance</span>
+            <strong id="balance-2">0</strong>
+          </div>
+          <div class="summary-box">
+            <span>Ingresos</span>
+            <strong id="total-income-2">0</strong>
+          </div>
+          <div class="summary-box">
+            <span>Gastos</span>
+            <strong id="total-expense-2">0</strong>
+          </div>
+          <div class="summary-box">
+            <span>Ahorro</span>
+            <strong id="savings-2">0%</strong>
+          </div>
+        </div>
+
+        <div class="bars">
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>Ingresos</span>
+              <span id="income-bar-text">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill income" id="income-bar"></div></div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>Gastos</span>
+              <span id="expense-bar-text">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill expense" id="expense-bar"></div></div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>Ahorro</span>
+              <span id="savings-bar-text">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill savings" id="savings-bar"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <article id="movimientos" class="form-panel reveal delay-1">
+          <div class="panel-head">
+            <div>
+              <h2>Agregar movimiento</h2>
+              <p>Registra ingresos o gastos con facilidad.</p>
+            </div>
+          </div>
+
+          <form id="form-transaction" class="form-grid">
+            <div class="field">
+              <label for="description">Descripción</label>
+              <input type="text" id="description" placeholder="Ej. sueldo, supermercado, transporte" required>
+            </div>
+
+            <div class="field">
+              <label for="amount">Monto</label>
+              <input type="number" id="amount" min="0" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="field">
+              <label for="type">Tipo</label>
+              <select id="type" required>
+                <option value="income">Ingreso</option>
+                <option value="expense">Gasto</option>
+              </select>
+            </div>
+
+            <button type="submit" class="primary-btn">Guardar movimiento</button>
+          </form>
+        </article>
+
+        <article class="list-panel reveal delay-2">
+          <div class="panel-head">
+            <div>
+              <h2>Movimientos recientes</h2>
+              <p>Revisa todo lo que has registrado.</p>
+            </div>
+          </div>
+
+          <ul id="transactions-list" class="transactions">
+            <li class="empty">No hay movimientos registrados todavía.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="organizacion" class="tasks-panel reveal delay-3" style="margin-top:24px;">
+        <div class="panel-head">
+          <div>
+            <h2>Organización financiera</h2>
+            <p>Agrega tareas importantes para mantener tus finanzas al día.</p>
+          </div>
+        </div>
+
+        <form id="task-form" class="form-grid" style="margin-bottom:18px;">
+          <div class="field">
+            <label for="task-input">Nueva tarea</label>
+            <input type="text" id="task-input" placeholder="Ej. pagar internet, revisar suscripciones" required>
+          </div>
+          <button type="submit" class="secondary-btn">Agregar tarea</button>
+        </form>
+
+        <ul id="task-list" class="tasks">
+          <li class="empty">No hay tareas pendientes.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Mi Control de Finanzas — diseñado para organizar tu dinero de forma simple y clara.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+                                     </html><script src="script.js"></script>
