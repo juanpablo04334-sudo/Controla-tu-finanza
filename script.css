@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>script.js con botón de copiar</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #111827;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      background: #1e293b;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .copy-btn {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      transform: scale(1.03);
+      opacity: 0.95;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 75vh;
+      border: none;
+      outline: none;
+      resize: vertical;
+      background: #0b1220;
+      color: #dbeafe;
+      padding: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>script.js listo para copiar</h1>
+        <div class="status" id="status">Pulsa el botón para copiar el código</div>
+      </div>
+      <button class="copy-btn" id="copyBtn">Copiar script.js</button>
+    </div>
+
+    <textarea id="code" readonly>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("form-transaction");
+  const list = document.getElementById("transactions-list");
+  const totalIncomeEl = document.getElementById("total-income");
+  const totalExpenseEl = document.getElementById("total-expense");
+  const balanceEl = document.getElementById("balance");
+  const savingsEl = document.getElementById("savings");
+  const taskForm = document.getElementById("task-form");
+  const taskList = document.getElementById("task-list");
+
+  let transactions = [];
+  let tasks = [];
+
+  function formatCurrency(value) {
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS"
+    }).format(value);
+  }
+
+  function updateSummary() {
+    const income = transactions
+      .filter(t => t.type === "income")
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    const expense = transactions
+      .filter(t => t.type === "expense")
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    const balance = income - expense;
+    const savings = income > 0 ? (balance / income) * 100 : 0;
+
+    totalIncomeEl.textContent = formatCurrency(income);
+    totalExpenseEl.textContent = formatCurrency(expense);
+    balanceEl.textContent = formatCurrency(balance);
+    savingsEl.textContent = `${savings.toFixed(1)}%`;
+  }
+
+  function renderTransactions() {
+    list.innerHTML = "";
+
+    if (transactions.length === 0) {
+      list.innerHTML = `<li class="empty">No hay movimientos registrados todavía.</li>`;
+      return;
+    }
+
+    transactions.forEach((transaction, index) => {
+      const li = document.createElement("li");
+      li.className = "transaction";
+
+      li.innerHTML = `
+        <div>
+          <strong>${transaction.description}</strong><br>
+          <small>${transaction.type === "income" ? "Ingreso" : "Gasto"}</small>
+        </div>
+        <div class="amount ${transaction.type}">
+          ${transaction.type === "income" ? "+" : "-"}${formatCurrency(transaction.amount)}
+          <button class="secondary-btn" data-delete="${index}" style="margin-left:10px; padding:6px 10px;">Eliminar</button>
+        </div>
+      `;
+
+      list.appendChild(li);
+    });
+
+    document.querySelectorAll("[data-delete]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = Number(e.target.getAttribute("data-delete"));
+        transactions.splice(index, 1);
+        renderTransactions();
+        updateSummary();
+      });
+    });
+  }
+
+  function renderTasks() {
+    taskList.innerHTML = "";
+
+    if (tasks.length === 0) {
+      taskList.innerHTML = `<li class="empty">No hay tareas pendientes.</li>`;
+      return;
+    }
+
+    tasks.forEach((task, index) => {
+      const li = document.createElement("li");
+      li.className = `task ${task.done ? "done" : ""}`;
+
+      li.innerHTML = `
+        <input type="checkbox" ${task.done ? "checked" : ""} data-task="${index}">
+        <span>${task.text}</span>
+        <button class="secondary-btn" data-remove-task="${index}" style="margin-left:auto; padding:6px 10px;">Eliminar</button>
+      `;
+
+      taskList.appendChild(li);
+    });
+
+    document.querySelectorAll("[data-task]").forEach(input => {
+      input.addEventListener("change", (e) => {
+        const index = Number(e.target.getAttribute("data-task"));
+        tasks[index].done = e.target.checked;
+        renderTasks();
+      });
+    });
+
+    document.querySelectorAll("[data-remove-task]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = Number(e.target.getAttribute("data-remove-task"));
+        tasks.splice(index, 1);
+        renderTasks();
+      });
+    });
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const description = document.getElementById("description").value.trim();
+    const amount = parseFloat(document.getElementById("amount").value);
+    const type = document.getElementById("type").value;
+
+    if (!description || isNaN(amount) || amount <= 0) return;
+
+    transactions.unshift({
+      description,
+      amount,
+      type
+    });
+
+    form.reset();
+    renderTransactions();
+    updateSummary();
+  });
+
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const taskInput = document.getElementById("task-input");
+    const text = taskInput.value.trim();
+
+    if (!text) return;
+
+    tasks.unshift({
+      text,
+      done: false
+    });
+
+    taskInput.value = "";
+    renderTasks();
+  });
+
+  renderTransactions();
+  renderTasks();
+  updateSummary();
+});
+    </textarea>
+  </div>
+
+  <script>
+    const copyBtn = document.getElementById("copyBtn");
+    const code = document.getElementById("code");
+    const status = document.getElementById("status");
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(code.value);
+        status.textContent = "Copiado correctamente. Ahora pégalo en tu archivo script.js";
+        copyBtn.textContent = "Copiado";
+        setTimeout(() => {
+          copyBtn.textContent = "Copiar script.js";
+          status.textContent = "Pulsa el botón para copiar el código";
+        }, 2200);
+      } catch (err) {
+        code.select();
+        document.execCommand("copy");
+        status.textContent = "Copiado correctamente. Ahora pégalo en tu archivo script.js";
+      }
+    });
+  </script>
+</body>
+</html>
